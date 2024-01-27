@@ -1,5 +1,6 @@
-import "./App.css";
+
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 import {
   Container,
   InputGroup,
@@ -21,10 +22,9 @@ const CLIENT_SECRET = "6ac6831663db4246811532d8f79c866c";
 
 function App() {
   const [searchInput, setSearchInput] = useState("");
-
   const [accessToken, setAccessToken] = useState("");
-
   const [albums, setAlbums] = useState([]);
+  const [artistInfo, setArtistInfo] = useState([]);
 
   //Once at the start
   useEffect(() => {
@@ -64,6 +64,8 @@ function App() {
     )
       .then((response) => response.json())
       .then((data) => {
+        setArtistInfo(data.artists.items[0]);
+        console.log(data.artists.items[0]);
         return data.artists.items[0].id;
       });
 
@@ -84,35 +86,22 @@ function App() {
         setAlbums(data.items);
       });
 
-    //display albums
+    //display albums 
 
-    console.log(albums);
+    // console.log(albums);
   }
 
   return (
-    <div className="App">
-
-      <Navbar expand="lg" className="bg-body-tertiary">
-        <Container>
-          <Navbar.Brand href="#home">Spotify Clone</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#link">Link</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+    <div className="App bg">
 
       <Row className="my-3">
-        <Col sm={4} className="">
+        <Col sm={2} className="">
           <Container>
             <h1>This will be a side bar</h1>
           </Container>
         </Col>
 
-        <Col sm={8}>
+        <Col sm={10}>
           <Container>
             <InputGroup className="mb-3" size="lg">
               <FormControl
@@ -129,11 +118,28 @@ function App() {
               <Button onClick={search}>Search</Button>
             </InputGroup>
 
+            {/* Artist Profile */}
+            <Container className="artist-top-result">
+              {artistInfo.name && (
+                <Row className="">
+                  <h4>Top Result: </h4>
+                  <Card className="artist-profile-card">
+                    <Card.Img src={artistInfo.images[0].url} />
+                    <CardBody>
+                      <CardTitle>{artistInfo.name}</CardTitle>
+                    </CardBody>
+                  </Card>
+                </Row>
+              )}
+            </Container>
+
+
+            {/* Artist Albums */}
             <Container>
-              <Row className="mx-2 row row-cols-3">
+              <Row className="row row-cols-6 gap-3">
                 {albums.map((album, i) => {
                   return (
-                    <Card className="mb-3">
+                    <Card className="mb-3 spotify-card">
                       <Card.Img src={album.images[0].url} />
                       <CardBody>
                         <CardTitle>{album.name}</CardTitle>
@@ -148,6 +154,7 @@ function App() {
       </Row>
 
     </div>
+    
   );
 }
 
